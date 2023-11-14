@@ -16,7 +16,13 @@ sequelize
     console.error(err);
   });
 
-app.use(morgan('dev'));
+app.use((req, res, next) => {
+  if (process.env.NODE_ENV === 'production') {
+    morgan('combined')(req, res, next);
+  } else {
+    morgan('dev')(req, res, next);
+  }
+});
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
