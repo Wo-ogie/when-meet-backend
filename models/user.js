@@ -33,7 +33,7 @@ class User extends Sequelize.Model {
 
   static associate(db) {
     db.User.belongsTo(db.Meeting);
-    db.User.hasMany(db.ScheduleVote);
+    db.User.hasMany(db.Schedule);
   }
 }
 

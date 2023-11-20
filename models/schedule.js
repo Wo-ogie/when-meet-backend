@@ -1,8 +1,8 @@
 const Sequelize = require('sequelize');
 
-class ScheduleVote extends Sequelize.Model {
+class Schedule extends Sequelize.Model {
   static initiate(sequelize) {
-    ScheduleVote.init(
+    Schedule.init(
       {
         availableDate: {
           type: Sequelize.DATEONLY,
@@ -17,8 +17,8 @@ class ScheduleVote extends Sequelize.Model {
         sequelize,
         timestamps: true,
         underscored: true,
-        modelName: 'ScheduleVote',
-        tableName: 'schedule_votes',
+        modelName: 'Schedule',
+        tableName: 'schedules',
         paranoid: false,
         charset: 'utf8mb4',
         collate: 'utf8mb4_general_ci',
@@ -27,8 +27,8 @@ class ScheduleVote extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.ScheduleVote.belongsTo(db.User);
+    db.Schedule.belongsTo(db.User);
   }
 }
 
-module.exports = ScheduleVote;
+module.exports = Schedule;
