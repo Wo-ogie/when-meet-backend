@@ -20,13 +20,31 @@ class Meeting extends Sequelize.Model {
           type: Sequelize.ENUM('STUDY', 'ETC'),
           allowNull: false,
         },
-        numOfParticipants: {
+        startDate: {
+          type: Sequelize.DATEONLY,
+          allowNull: false,
+        },
+        endDate: {
+          type: Sequelize.DATEONLY,
+          allowNull: false,
+        },
+        currentParticipants: {
+          type: Sequelize.INTEGER.UNSIGNED,
+          allowNull: false,
+          defaultValue: 0,
+        },
+        maxParticipants: {
           type: Sequelize.INTEGER.UNSIGNED,
           allowNull: true,
         },
         voteExpiresAt: {
           type: Sequelize.DATE,
           allowNull: true,
+        },
+        isClosed: {
+          type: Sequelize.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
         },
       },
       {
