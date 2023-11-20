@@ -1,6 +1,11 @@
 const express = require('express');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
+const session = require('express-session');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const { sequelize } = require('./models');
 
@@ -26,6 +31,18 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.COOKIE_SECRET,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+    },
+  }),
+);
 
 app.use((req, res, next) => {
   const error = new Error(`There is no router. ${req.method} ${req.url}`);
