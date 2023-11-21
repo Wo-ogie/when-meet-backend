@@ -6,6 +6,8 @@ class Meeting extends Sequelize.Model {
       {
         id: {
           type: Sequelize.UUID,
+          defaultValue: Sequelize.DataTypes.UUIDV4,
+          allowNull: false,
           primaryKey: true,
         },
         title: {
@@ -61,7 +63,7 @@ class Meeting extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.Meeting.hasMany(db.User);
+    db.Meeting.hasMany(db.Participant);
   }
 }
 

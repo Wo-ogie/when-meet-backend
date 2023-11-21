@@ -27,7 +27,7 @@ class Schedule extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.Schedule.belongsTo(db.User);
+    db.Schedule.belongsTo(db.Participant);
   }
 }
 

@@ -1,8 +1,8 @@
 const Sequelize = require('sequelize');
 
-class User extends Sequelize.Model {
+class Participant extends Sequelize.Model {
   static initiate(sequelize) {
-    User.init(
+    Participant.init(
       {
         name: {
           type: Sequelize.STRING(10),
@@ -22,8 +22,8 @@ class User extends Sequelize.Model {
         sequelize,
         timestamps: true,
         underscored: true,
-        modelName: 'User',
-        tableName: 'users',
+        modelName: 'Participant',
+        tableName: 'participants',
         paranoid: false,
         charset: 'utf8mb4',
         collate: 'utf8mb4_general_ci',
@@ -32,9 +32,9 @@ class User extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.User.belongsTo(db.Meeting);
-    db.User.hasMany(db.Schedule);
+    db.Participant.belongsTo(db.Meeting);
+    db.Participant.hasMany(db.Schedule);
   }
 }
 
-module.exports = User;
+module.exports = Participant;
