@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
-const { Meeting } = require('../models');
+const { Meeting, Participant, Schedule } = require('../models');
 const MeetingResponse = require('../dto/response/meetingResponse');
+const MeetingWithParticipantsResponse = require('../dto/response/meetingWithParticipantsResponse');
 
 exports.createMeeting = async (req, res, next) => {
   try {
@@ -20,5 +21,52 @@ exports.createMeeting = async (req, res, next) => {
   } catch (error) {
     console.error(error);
     return next(error);
+  }
+};
+
+exports.getMeetingById = async (req, res, next) => {
+  try {
+    const meeting = await Meeting.findOne({
+      where: { id: req.params.meetingId },
+    });
+    if (!meeting) {
+      const error = new Error('일치하는 약속을 찾을 수 없습니다.');
+      error.status = 404;
+      next(error);
+    }
+    res.json(MeetingResponse.from(meeting));
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+exports.getMeetingDetailById = async (req, res, next) => {
+  try {
+    const meeting = await Meeting.findOne({
+      where: { id: req.params.meetingId },
+      include: [
+        {
+          model: Participant,
+          include: [
+            {
+              model: Schedule,
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!meeting) {
+      const error = new Error('일치하는 약속을 찾을 수 없습니다.');
+      error.status = 404;
+      next(error);
+    }
+
+    console.log(meeting);
+    res.json(MeetingWithParticipantsResponse.from(meeting));
+  } catch (error) {
+    console.error(error);
+    next(error);
   }
 };
