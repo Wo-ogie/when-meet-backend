@@ -54,7 +54,7 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  res.json({
+  res.status(err.status || 500).json({
     message: err.message,
     error: process.env.NODE_ENV !== 'production' ? err : {},
   });
