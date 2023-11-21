@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+const meetingRouter = require('./routes/meeting');
 const { sequelize } = require('./models');
 
 const app = express();
@@ -44,6 +45,8 @@ app.use(
   }),
 );
 
+app.use('/meetings', meetingRouter);
+
 app.use((req, res, next) => {
   const error = new Error(`There is no router. ${req.method} ${req.url}`);
   error.status = 404;
@@ -54,7 +57,6 @@ app.use((err, req, res, next) => {
   res.json({
     message: err.message,
     error: process.env.NODE_ENV !== 'production' ? err : {},
-    status: err.status || 500,
   });
 });
 
