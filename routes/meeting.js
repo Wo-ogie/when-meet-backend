@@ -1,6 +1,8 @@
 const express = require('express');
+const { isAuthenticated } = require('../middlewares/index');
 const {
   createMeeting,
+  entry,
   getMeetingById,
   getMeetingDetailById,
   closeMeeting,
@@ -10,13 +12,12 @@ const router = express.Router();
 
 router.post('/', createMeeting);
 
-// TODO: 접근 권한 확인 로직 추가 필요
-router.get('/:meetingId', getMeetingById);
+router.post('/:meetingId/entry', entry);
 
-// TODO: 접근 권한 확인 로직 추가 필요
-router.get('/:meetingId/details', getMeetingDetailById);
+router.get('/:meetingId', isAuthenticated, getMeetingById);
 
-// TODO: 접근 권한 확인 로직 추가 필요
-router.patch('/:meetingId/close', closeMeeting);
+router.get('/:meetingId/details', isAuthenticated, getMeetingDetailById);
+
+router.patch('/:meetingId/close', isAuthenticated, closeMeeting);
 
 module.exports = router;
