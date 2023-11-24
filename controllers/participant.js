@@ -1,9 +1,30 @@
 const bcrypt = require('bcrypt');
-const { Participant } = require('../models');
 const { createPasswordIsNullError } = require('../errors/meetingErrors');
+const {
+  createParticipantIsAlreadyExistError,
+} = require('../errors/participantErrors');
 const ParticipantResponse = require('../dto/response/participantResponse');
+const { Participant } = require('../models');
 
 const HASHING_ROUND = 12;
+
+async function createParticipant(name, password, email, meetingId) {
+  return Participant.create({
+    name,
+    password,
+    email,
+    MeetingId: meetingId,
+  });
+}
+
+async function findParticipantByMeetingIdAndName(meetingId, name) {
+  return Participant.findOne({
+    where: {
+      MeetingId: meetingId,
+      name,
+    },
+  });
+}
 
 async function encryptPassword(password, next) {
   if (!password) {
@@ -18,24 +39,17 @@ async function encryptPassword(password, next) {
 }
 
 exports.createParticipant = async (req, res, next) => {
-  console.log(req.params);
   const { meetingId } = req.params;
   const reqName = req.body.name;
   const reqPassword = req.body.password || null;
   const reqEmail = req.body.email || null;
-  console.log(meetingId);
-  console.log(reqName);
-  console.log(reqPassword);
-  console.log(reqEmail);
   try {
-    const existingParticipant = await Participant.findOne({
-      where: {
-        MeetingId: meetingId,
-        name: reqName,
-      },
-    });
+    const existingParticipant = await findParticipantByMeetingIdAndName(
+      meetingId,
+      reqName,
+    );
     if (existingParticipant) {
-      throw new Error();
+      throw createParticipantIsAlreadyExistError;
     }
 
     let passwordEncrypted = null;
@@ -43,13 +57,27 @@ exports.createParticipant = async (req, res, next) => {
       passwordEncrypted = await encryptPassword(reqPassword, next);
     }
 
-    const participantCreated = await Participant.create({
-      name: reqName,
-      password: passwordEncrypted,
-      email: reqEmail,
-      MeetingId: meetingId,
-    });
+    const participantCreated = await createParticipant(
+      reqName,
+      passwordEncrypted,
+      reqEmail,
+      meetingId,
+    );
     return res.status(201).json(ParticipantResponse.from(participantCreated));
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.getParticipantExistence = async (req, res, next) => {
+  try {
+    const participant = await findParticipantByMeetingIdAndName(
+      req.params.meetingId,
+      req.query.name,
+    );
+    return res.json({
+      exist: !!participant,
+    });
   } catch (error) {
     return next(error);
   }
