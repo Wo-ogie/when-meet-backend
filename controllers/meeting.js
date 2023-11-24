@@ -77,7 +77,7 @@ function setParticipantDataToCookie(req, res, participant) {
       cookieName,
       JSON.stringify({
         meetingId: existCookie.meetingId,
-        name: existCookie.name,
+        participantId: existCookie.participantId,
       }),
       cookieOptions,
     );
@@ -87,7 +87,7 @@ function setParticipantDataToCookie(req, res, participant) {
     cookieName,
     JSON.stringify({
       meetingId: participant.MeetingId,
-      name: participant.name,
+      participantId: participant.id,
     }),
     cookieOptions,
   );
