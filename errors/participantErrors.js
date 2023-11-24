@@ -5,3 +5,9 @@ exports.createParticipantIsAlreadyExistError = () => {
   error.status = 409;
   return error;
 };
+
+exports.createParticipantNotFoundError = () => {
+  const error = new Error('참가자 정보를 찾을 수 없습니다.');
+  error.status = 404;
+  return error;
+};

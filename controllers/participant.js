@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const { createPasswordIsNullError } = require('../errors/meetingErrors');
 const {
   createParticipantIsAlreadyExistError,
+  createParticipantNotFoundError,
 } = require('../errors/participantErrors');
 const ParticipantResponse = require('../dto/response/participantResponse');
 const { Participant } = require('../models');
@@ -17,6 +18,18 @@ async function createParticipant(name, password, email, meetingId) {
   });
 }
 
+async function getParticipantById(participantId) {
+  const participant = await Participant.findOne({
+    where: {
+      id: participantId,
+    },
+  });
+  if (!participant) {
+    throw createParticipantNotFoundError();
+  }
+  return participant;
+}
+
 async function findParticipantByMeetingIdAndName(meetingId, name) {
   return Participant.findOne({
     where: {
@@ -24,6 +37,14 @@ async function findParticipantByMeetingIdAndName(meetingId, name) {
       name,
     },
   });
+}
+
+async function getParticipantByMeetingIdAndName(meetingId, name) {
+  const participant = await findParticipantByMeetingIdAndName(meetingId, name);
+  if (!participant) {
+    throw createParticipantNotFoundError();
+  }
+  return participant;
 }
 
 async function encryptPassword(password, next) {
@@ -64,6 +85,27 @@ exports.createParticipant = async (req, res, next) => {
       meetingId,
     );
     return res.status(201).json(ParticipantResponse.from(participantCreated));
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.getParticipantById = async (req, res, next) => {
+  try {
+    const participant = await getParticipantById(req.params.participantId);
+    return res.json(ParticipantResponse.from(participant));
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.getParticipantByName = async (req, res, next) => {
+  try {
+    const participant = await getParticipantByMeetingIdAndName(
+      req.params.meetingId,
+      req.query.name,
+    );
+    return res.json(ParticipantResponse.from(participant));
   } catch (error) {
     return next(error);
   }
