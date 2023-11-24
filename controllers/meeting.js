@@ -70,15 +70,19 @@ function setParticipantDataToCookie(req, res, participant) {
     httpOnly: true,
     signed: true,
   };
-  const existCookie = req.signedCookies.participantData;
-  res.clearCookie(
-    cookieName,
-    JSON.stringify({
-      meetingId: existCookie.meetingId,
-      name: existCookie.name,
-    }),
-    cookieOptions,
-  );
+
+  const existCookie = req.signedCookies.participantData || null;
+  if (existCookie) {
+    res.clearCookie(
+      cookieName,
+      JSON.stringify({
+        meetingId: existCookie.meetingId,
+        name: existCookie.name,
+      }),
+      cookieOptions,
+    );
+  }
+
   res.cookie(
     cookieName,
     JSON.stringify({
@@ -121,6 +125,7 @@ exports.entry = async (req, res, next) => {
         MeetingId: meetingIdToEntry,
       },
     });
+    console.log('participant', participant);
 
     if (!participant) {
       const passwordEncrypted = await encryptPassword(passwordToEntry, next);
