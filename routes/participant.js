@@ -6,14 +6,14 @@ const {
   getParticipantExistence,
 } = require('../controllers/participant');
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
-router.post('/:meetingId/participants', createParticipant);
+router.post('/', createParticipant);
 
-router.get('/:meetingId/participants', getParticipantByName);
+router.get('/', getParticipantByName);
 
-router.get('/:meetingId/participants/:participantId', getParticipantById);
+router.get('/:participantId', getParticipantById);
 
-router.get('/:meetingId/participants/existence', getParticipantExistence);
+router.get('/existence', getParticipantExistence);
 
 module.exports = router;

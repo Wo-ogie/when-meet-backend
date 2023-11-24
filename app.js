@@ -49,7 +49,7 @@ app.use(
 );
 
 app.use('/meetings', meetingRouter);
-app.use('/meetings', participantRouter);
+app.use('/meetings/:meetingId/participants', participantRouter);
 
 app.use((req, res, next) => {
   const error = new Error(`There is no router. ${req.method} ${req.url}`);
