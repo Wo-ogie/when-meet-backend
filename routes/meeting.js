@@ -1,5 +1,5 @@
 const express = require('express');
-const { isAuthenticated } = require('../middlewares/index');
+const { isAuthenticated } = require('../middlewares/auth');
 const {
   createMeeting,
   entry,

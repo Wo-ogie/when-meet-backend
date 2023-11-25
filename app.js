@@ -10,6 +10,7 @@ dotenv.config();
 
 const meetingRouter = require('./routes/meeting');
 const participantRouter = require('./routes/participant');
+const myScheduleRouter = require('./routes/mySchedule');
 const { sequelize } = require('./models');
 
 const app = express();
@@ -50,6 +51,7 @@ app.use(
 
 app.use('/meetings', meetingRouter);
 app.use('/meetings/:meetingId/participants', participantRouter);
+app.use('/meetings/:meetingId/my/schedules', myScheduleRouter);
 
 app.use((req, res, next) => {
   const error = new Error(`There is no router. ${req.method} ${req.url}`);
