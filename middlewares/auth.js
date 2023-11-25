@@ -12,7 +12,7 @@ function parseParticipantData(req, res, next) {
 }
 
 exports.isAuthenticated = (req, res, next) => {
-  const participantData = parseParticipantData(req);
+  const participantData = parseParticipantData(req, res, next);
   if (participantData.meetingId !== req.params.meetingId) {
     const error = new Error('접근 권한이 없습니다.');
     error.status = 401;
