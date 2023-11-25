@@ -39,3 +39,17 @@ exports.createMySchedules = async (req, res, next) => {
     return next(error);
   }
 };
+
+exports.getMySchedules = async (req, res, next) => {
+  const participantId = getLoggedInParticipantId(req, res, next);
+  try {
+    const mySchedules = await Schedule.findAll({
+      where: {
+        ParticipantId: participantId,
+      },
+    });
+    return res.json(SchedulesResponse.from(mySchedules));
+  } catch (error) {
+    return next(error);
+  }
+};
