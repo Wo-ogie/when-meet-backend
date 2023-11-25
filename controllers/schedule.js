@@ -3,6 +3,25 @@ const { getLoggedInParticipantId } = require('../middlewares/auth');
 const SchedulesResponse = require('../dto/response/schedulesResponse');
 const { createScheduleAlreadyExistError } = require('../errors/scheduleErrors');
 
+async function createSchedules(participantId, schedules) {
+  console.log('participantId', participantId);
+  console.log('schedules', schedules);
+  return sequelize.transaction(async (transaction) =>
+    Promise.all(
+      schedules.map(async (availableSchedule) =>
+        Schedule.create(
+          {
+            availableDate: availableSchedule.availableDate,
+            availableTimes: availableSchedule.availableTimes,
+            ParticipantId: participantId,
+          },
+          { transaction },
+        ),
+      ),
+    ),
+  );
+}
+
 async function validateScheduleNotExist(participantId) {
   const numOfSchedules = await Schedule.count({
     where: {
@@ -16,25 +35,11 @@ async function validateScheduleNotExist(participantId) {
 
 exports.createMySchedules = async (req, res, next) => {
   const participantId = getLoggedInParticipantId(req, res, next);
-  const { availableSchedules } = req.body;
+  const { schedules } = req.body;
   try {
     await validateScheduleNotExist(participantId);
-
-    const schedules = await sequelize.transaction(async (transaction) =>
-      Promise.all(
-        availableSchedules.map((availableSchedule) =>
-          Schedule.create(
-            {
-              availableDate: availableSchedule.availableDate,
-              availableTimes: availableSchedule.availableTimes,
-              ParticipantId: participantId,
-            },
-            { transaction },
-          ),
-        ),
-      ),
-    );
-    return res.json(SchedulesResponse.from(schedules));
+    const createdSchedules = createSchedules(participantId, schedules);
+    return res.json(SchedulesResponse.from(createdSchedules));
   } catch (error) {
     return next(error);
   }
@@ -49,6 +54,26 @@ exports.getMySchedules = async (req, res, next) => {
       },
     });
     return res.json(SchedulesResponse.from(mySchedules));
+  } catch (error) {
+    return next(error);
+  }
+};
+
+async function deleteAllByParticipantId(participantId) {
+  await Schedule.destroy({
+    where: {
+      ParticipantId: participantId,
+    },
+  });
+}
+
+exports.updateMySchedules = async (req, res, next) => {
+  const participantId = getLoggedInParticipantId(req, res, next);
+  const { schedules } = req.body;
+  try {
+    await deleteAllByParticipantId(participantId);
+    const createdSchedules = await createSchedules(participantId, schedules);
+    return res.json(SchedulesResponse.from(createdSchedules));
   } catch (error) {
     return next(error);
   }
