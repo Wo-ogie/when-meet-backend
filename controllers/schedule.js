@@ -38,7 +38,7 @@ exports.createMySchedules = async (req, res, next) => {
   const { schedules } = req.body;
   try {
     await validateScheduleNotExist(participantId);
-    const createdSchedules = createSchedules(participantId, schedules);
+    const createdSchedules = await createSchedules(participantId, schedules);
     return res.json(SchedulesResponse.from(createdSchedules));
   } catch (error) {
     return next(error);
