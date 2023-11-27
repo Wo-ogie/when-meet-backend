@@ -8,7 +8,9 @@ const {
 } = require('../errors/meetingErrors');
 const MeetingResponse = require('../dto/response/meetingResponse');
 const MeetingWithParticipantsResponse = require('../dto/response/meetingWithParticipantsResponse');
-const ParticipantResponse = require('../dto/response/participantResponse');
+const {
+  createParticipantNotFoundError,
+} = require('../errors/participantErrors');
 
 const HASHING_ROUND = 12;
 
@@ -52,6 +54,19 @@ async function getMeetingWithParticipantsAndSchedulesById(meetingId) {
     throw createMeetingNotFoundError();
   }
   return meeting;
+}
+
+async function getParticipantByNameAndMeetingId(name, meetingId) {
+  const participant = await Participant.findOne({
+    where: {
+      name,
+      MeetingId: meetingId,
+    },
+  });
+  if (!participant) {
+    throw createParticipantNotFoundError();
+  }
+  return participant;
 }
 
 async function validatePasswordIsMatched(requestPassword, exPassword) {
@@ -115,32 +130,20 @@ exports.createMeeting = async (req, res, next) => {
 };
 
 exports.entry = async (req, res, next) => {
-  const meetingIdToEntry = req.params.meetingId;
-  const nameToEntry = req.body.name;
-  const passwordToEntry = req.body.password;
+  const { meetingId } = req.params;
+  const participantName = req.body.name;
+  const participantPassword = req.body.password;
   try {
-    const participant = await Participant.findOne({
-      where: {
-        name: nameToEntry,
-        MeetingId: meetingIdToEntry,
-      },
-    });
-    console.log('participant', participant);
-
-    if (!participant) {
-      const passwordEncrypted = await encryptPassword(passwordToEntry, next);
-      const participantCreated = await Participant.create({
-        name: nameToEntry,
-        password: passwordEncrypted,
-        email: req.body.email,
-        MeetingId: meetingIdToEntry,
-      });
-      setParticipantDataToCookie(req, res, participantCreated);
-      return res.status(201).json(ParticipantResponse.from(participantCreated));
-    }
+    const participant = await getParticipantByNameAndMeetingId(
+      participantName,
+      meetingId,
+    );
 
     if (participant.password) {
-      await validatePasswordIsMatched(passwordToEntry, participant.password);
+      await validatePasswordIsMatched(
+        participantPassword,
+        participant.password,
+      );
     }
     setParticipantDataToCookie(req, res, participant);
     return res.status(204).end();
@@ -169,11 +172,11 @@ exports.getMeetingDetailById = async (req, res, next) => {
   }
 };
 
-const validateMeetingIsNotClosed = (meeting) => {
+function validateMeetingIsNotClosed(meeting) {
   if (meeting.isClosed === true) {
     throw createMeetingIsAlreadyClosedError();
   }
-};
+}
 
 exports.closeMeeting = async (req, res, next) => {
   try {
