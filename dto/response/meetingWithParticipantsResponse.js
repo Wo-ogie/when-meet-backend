@@ -7,7 +7,6 @@ class MeetingWithParticipantsResponse {
     purpose,
     startDate,
     endDate,
-    currentParticipants,
     maxParticipants,
     voteExpiresAt,
     isClosed,
@@ -19,7 +18,6 @@ class MeetingWithParticipantsResponse {
     this.purpose = purpose;
     this.startDate = startDate;
     this.endDate = endDate;
-    this.currentParticipants = currentParticipants;
     this.maxParticipants = maxParticipants;
     this.voteExpiresAt = voteExpiresAt;
     this.isClosed = isClosed;
@@ -34,7 +32,6 @@ class MeetingWithParticipantsResponse {
       meeting.purpose,
       meeting.startDate,
       meeting.endDate,
-      meeting.currentParticipants,
       meeting.maxParticipants,
       meeting.voteExpiresAt,
       meeting.isClosed,

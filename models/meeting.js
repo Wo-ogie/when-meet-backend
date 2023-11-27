@@ -30,11 +30,6 @@ class Meeting extends Sequelize.Model {
           type: Sequelize.DATEONLY,
           allowNull: false,
         },
-        currentParticipants: {
-          type: Sequelize.INTEGER.UNSIGNED,
-          allowNull: false,
-          defaultValue: 0,
-        },
         maxParticipants: {
           type: Sequelize.INTEGER.UNSIGNED,
           allowNull: true,
