@@ -9,6 +9,7 @@ class MeetingResponse {
     maxParticipants,
     voteExpiresAt,
     isClosed,
+    confirmedTime,
   ) {
     this.id = id;
     this.title = title;
@@ -19,6 +20,7 @@ class MeetingResponse {
     this.maxParticipants = maxParticipants;
     this.voteExpiresAt = voteExpiresAt;
     this.isClosed = isClosed;
+    this.confirmedTime = confirmedTime;
   }
 
   static from(meeting) {
@@ -32,6 +34,7 @@ class MeetingResponse {
       meeting.maxParticipants,
       meeting.voteExpiresAt,
       meeting.isClosed,
+      meeting.confirmedTime,
     );
   }
 }

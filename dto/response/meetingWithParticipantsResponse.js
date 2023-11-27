@@ -11,6 +11,7 @@ class MeetingWithParticipantsResponse {
     maxParticipants,
     voteExpiresAt,
     isClosed,
+    confirmedTime,
     participants,
   ) {
     this.id = id;
@@ -22,6 +23,7 @@ class MeetingWithParticipantsResponse {
     this.maxParticipants = maxParticipants;
     this.voteExpiresAt = voteExpiresAt;
     this.isClosed = isClosed;
+    this.confirmedTime = confirmedTime;
     this.participants = participants;
   }
 
@@ -36,6 +38,7 @@ class MeetingWithParticipantsResponse {
       meeting.maxParticipants,
       meeting.voteExpiresAt,
       meeting.isClosed,
+      meeting.confirmedTime,
       meeting.Participants.map((participant) =>
         ParticipantWithSchedulesResponse.from(participant),
       ),

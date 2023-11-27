@@ -48,6 +48,10 @@ class Meeting extends Sequelize.Model {
           allowNull: false,
           defaultValue: false,
         },
+        confirmedTime: {
+          type: Sequelize.DATE,
+          allowNull: true,
+        },
       },
       {
         sequelize,
