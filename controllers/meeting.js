@@ -195,3 +195,19 @@ exports.closeMeeting = async (req, res, next) => {
     return next(error);
   }
 };
+
+exports.confirmTime = async (req, res, next) => {
+  const { meetingId } = req.params;
+  const { adminPassword } = req.body;
+  try {
+    const meeting = await getMeetingById(meetingId);
+    await validatePasswordIsMatched(adminPassword, meeting.adminPassword);
+
+    meeting.confirmedTime = Date.now();
+    await meeting.save();
+
+    return res.json(MeetingResponse.from(meeting));
+  } catch (error) {
+    return next(error);
+  }
+};
