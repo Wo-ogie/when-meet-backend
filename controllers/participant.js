@@ -70,7 +70,7 @@ exports.createParticipant = async (req, res, next) => {
       reqName,
     );
     if (existingParticipant) {
-      throw createParticipantIsAlreadyExistError;
+      throw createParticipantIsAlreadyExistError();
     }
 
     let passwordEncrypted = null;
