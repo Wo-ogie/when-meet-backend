@@ -12,8 +12,8 @@ router.post('/', createParticipant);
 
 router.get('/', getParticipantByName);
 
-router.get('/:participantId', getParticipantById);
-
 router.get('/existence', getParticipantExistence);
+
+router.get('/:participantId', getParticipantById);
 
 module.exports = router;

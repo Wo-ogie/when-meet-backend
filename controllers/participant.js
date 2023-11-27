@@ -118,7 +118,7 @@ exports.getParticipantExistence = async (req, res, next) => {
       req.query.name,
     );
     return res.json({
-      exist: !!participant,
+      exists: !!participant,
     });
   } catch (error) {
     return next(error);
