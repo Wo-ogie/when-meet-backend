@@ -7,7 +7,6 @@ class Participant extends Sequelize.Model {
         name: {
           type: Sequelize.STRING(10),
           allowNull: false,
-          unique: true,
         },
         password: {
           type: Sequelize.STRING(100),
@@ -27,6 +26,9 @@ class Participant extends Sequelize.Model {
         paranoid: false,
         charset: 'utf8mb4',
         collate: 'utf8mb4_general_ci',
+        uniqueKeys: {
+          uniqueNameMeetingId: { fields: ['name', 'meeting_id'] },
+        },
       },
     );
   }
