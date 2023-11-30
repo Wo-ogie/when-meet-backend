@@ -19,7 +19,7 @@ class Meeting extends Sequelize.Model {
           allowNull: false,
         },
         purpose: {
-          type: Sequelize.ENUM('STUDY', 'ETC'),
+          type: Sequelize.ENUM('STUDY', 'MEETING', 'PLAYING', 'FOOD', 'ETC'),
           allowNull: false,
         },
         startDate: {
