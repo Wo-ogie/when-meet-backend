@@ -120,6 +120,8 @@ exports.createMeeting = async (req, res, next) => {
       purpose: req.body.purpose,
       startDate: req.body.startDate,
       endDate: req.body.endDate,
+      availableVotingStartTime: req.body.availableVotingStartTime,
+      availableVotingEndTime: req.body.availableVotingEndTime,
       maxParticipants: req.body.maxParticipants,
       voteExpiresAt: req.body.voteExpiresAt,
     });
