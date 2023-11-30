@@ -38,7 +38,7 @@ class Meeting extends Sequelize.Model {
         availableVotingEndTime: {
           type: Sequelize.TIME,
           allowNull: false,
-          defaultValue: '23:59:00',
+          defaultValue: '00:00:00',
         },
         maxParticipants: {
           type: Sequelize.INTEGER.UNSIGNED,
