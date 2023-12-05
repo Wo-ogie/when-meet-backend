@@ -4,7 +4,7 @@ const {
   createMostConfirmedTimeNotFoundError,
 } = require('../errors/meetingErrors');
 
-exports.getMostConfirmedTime = async (purpose) => {
+exports.getTopThreeConfirmedTimes = async (purpose) => {
   const query = `
       SELECT EXTRACT(HOUR FROM m.confirmed_time) AS confirmed_time_hour,
              COUNT(1)                            AS confirmed_time_count
@@ -18,14 +18,13 @@ exports.getMostConfirmedTime = async (purpose) => {
   const params = {
     replacements: { purpose },
     type: Sequelize.QueryTypes.SELECT,
-    plain: true,
   };
-  const result = await sequelize.query(query, params);
-  if (!result) {
+  const results = await sequelize.query(query, params);
+  if (!results || results.length === 0) {
     throw createMostConfirmedTimeNotFoundError();
   }
-  return {
+  return results.slice(0, 3).map((result) => ({
     hour: result.confirmed_time_hour,
     count: result.confirmed_time_count,
-  };
+  }));
 };

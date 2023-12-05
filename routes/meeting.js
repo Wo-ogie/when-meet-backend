@@ -5,7 +5,7 @@ const {
   entry,
   getMeetingById,
   getMeetingDetailById,
-  getMostConfirmedTime,
+  getTopThreeConfirmedTimes,
   closeMeeting,
   confirmTime,
 } = require('../controllers/meeting');
@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.post('/', createMeeting);
 
-router.get('/most-confirmed-time', getMostConfirmedTime);
+router.get('/top-three-confirmed-times', getTopThreeConfirmedTimes);
 
 router.post('/:meetingId/entry', entry);
 

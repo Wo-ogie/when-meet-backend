@@ -196,14 +196,16 @@ exports.getMeetingDetailById = async (req, res, next) => {
   }
 };
 
-exports.getMostConfirmedTime = async (req, res, next) => {
+exports.getTopThreeConfirmedTimes = async (req, res, next) => {
   const { purpose } = req.query;
   if (!purpose) {
     return res.status(400).json({ message: 'Purpose is required' });
   }
   try {
-    const result = await meetingRepositotry.getMostConfirmedTime(purpose);
-    return res.json(result);
+    const results = await meetingRepositotry.getTopThreeConfirmedTimes(purpose);
+    return res.json({
+      topThreeConfirmedTimes: results,
+    });
   } catch (error) {
     return next(error);
   }
