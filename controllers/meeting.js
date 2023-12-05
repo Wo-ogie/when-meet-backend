@@ -124,6 +124,7 @@ exports.createMeeting = async (req, res, next) => {
       availableVotingEndTime: req.body.availableVotingEndTime,
       maxParticipants: req.body.maxParticipants,
       voteExpiresAt: req.body.voteExpiresAt,
+      confirmedTime: null,
     });
     return res.status(201).json(MeetingResponse.from(meeting));
   } catch (error) {
