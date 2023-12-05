@@ -6,7 +6,6 @@ const {
   createMeetingIsAlreadyClosedError,
   createPasswordNotMatchedError,
   createPasswordIsNullError,
-  createMostConfirmedTimeNotFoundError,
 } = require('../errors/meetingErrors');
 const MeetingResponse = require('../dto/response/meetingResponse');
 const MeetingWithParticipantsResponse = require('../dto/response/meetingWithParticipantsResponse');
@@ -69,6 +68,14 @@ async function getParticipantByNameAndMeetingId(name, meetingId) {
     throw createParticipantNotFoundError();
   }
   return participant;
+}
+
+async function getNumOfParticipantsByMeetingId(meetingId) {
+  return Participant.count({
+    where: {
+      MeetingId: meetingId,
+    },
+  });
 }
 
 async function validatePasswordIsMatched(requestPassword, exPassword) {
@@ -160,7 +167,13 @@ exports.entry = async (req, res, next) => {
 exports.getMeetingById = async (req, res, next) => {
   try {
     const meeting = await getMeetingById(req.params.meetingId);
-    return res.json(MeetingResponse.from(meeting));
+    const currentParticipants = await getNumOfParticipantsByMeetingId(
+      meeting.id,
+    );
+    return res.json({
+      ...MeetingResponse.from(meeting),
+      currentParticipants,
+    });
   } catch (error) {
     return next(error);
   }
@@ -171,7 +184,13 @@ exports.getMeetingDetailById = async (req, res, next) => {
     const meeting = await getMeetingWithParticipantsAndSchedulesById(
       req.params.meetingId,
     );
-    return res.json(MeetingWithParticipantsResponse.from(meeting));
+    const currentParticipants = await getNumOfParticipantsByMeetingId(
+      meeting.id,
+    );
+    return res.json({
+      ...MeetingWithParticipantsResponse.from(meeting),
+      currentParticipants,
+    });
   } catch (error) {
     return next(error);
   }
