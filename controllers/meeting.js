@@ -1,10 +1,12 @@
 const bcrypt = require('bcrypt');
 const { Meeting, Participant, Schedule } = require('../models');
+const meetingRepositotry = require('../repository/meeting');
 const {
   createMeetingNotFoundError,
   createMeetingIsAlreadyClosedError,
   createPasswordNotMatchedError,
   createPasswordIsNullError,
+  createMostConfirmedTimeNotFoundError,
 } = require('../errors/meetingErrors');
 const MeetingResponse = require('../dto/response/meetingResponse');
 const MeetingWithParticipantsResponse = require('../dto/response/meetingWithParticipantsResponse');
@@ -170,6 +172,19 @@ exports.getMeetingDetailById = async (req, res, next) => {
       req.params.meetingId,
     );
     return res.json(MeetingWithParticipantsResponse.from(meeting));
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.getMostConfirmedTime = async (req, res, next) => {
+  const { purpose } = req.query;
+  if (!purpose) {
+    return res.status(400).json({ message: 'Purpose is required' });
+  }
+  try {
+    const result = await meetingRepositotry.getMostConfirmedTime(purpose);
+    return res.json(result);
   } catch (error) {
     return next(error);
   }
