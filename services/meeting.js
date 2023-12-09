@@ -64,7 +64,7 @@ function validateMeetingIsNotClosed(meeting) {
 }
 
 const closeMeetingById = async (meetingId) => {
-  const meeting = await getMeetingById(meetingId);
+  const meeting = await getMeetingWithParticipantsById(meetingId);
   validateMeetingIsNotClosed(meeting);
 
   meeting.isClosed = true;

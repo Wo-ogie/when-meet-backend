@@ -1,4 +1,6 @@
+const schedule = require('node-schedule');
 const bcrypt = require('bcrypt');
+
 const { Meeting, Participant } = require('../models');
 const meetingRepository = require('../repository/meeting');
 const {
@@ -102,6 +104,11 @@ exports.createMeeting = async (req, res, next) => {
       voteExpiresAt: req.body.voteExpiresAt,
       confirmedTime: null,
     });
+
+    schedule.scheduleJob(meeting.voteExpiresAt, async () => {
+      await closeMeetingById(meeting.id);
+    });
+
     return res.status(201).json(MeetingResponse.from(meeting));
   } catch (error) {
     return next(error);
