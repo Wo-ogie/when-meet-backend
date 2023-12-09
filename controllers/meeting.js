@@ -1,10 +1,13 @@
 const bcrypt = require('bcrypt');
-const { Meeting, Participant, Schedule } = require('../models');
-const meetingRepositotry = require('../repository/meeting');
-const { sendMeetingVoteEndNotificationEmail } = require('../services/mail');
+const { Meeting, Participant } = require('../models');
+const meetingRepository = require('../repository/meeting');
 const {
-  createMeetingNotFoundError,
-  createMeetingIsAlreadyClosedError,
+  getMeetingById,
+  getMeetingWithParticipantsById,
+  getMeetingWithParticipantsAndSchedulesById,
+  closeMeetingById,
+} = require('../services/meeting');
+const {
   createPasswordNotMatchedError,
   createPasswordIsNullError,
 } = require('../errors/meetingErrors');
@@ -26,51 +29,6 @@ async function encryptPassword(password, next) {
   } catch (error) {
     return next(error);
   }
-}
-
-async function getMeetingById(meetingId) {
-  const meeting = await Meeting.findOne({
-    where: { id: meetingId },
-  });
-  if (!meeting) {
-    throw createMeetingNotFoundError();
-  }
-  return meeting;
-}
-
-async function getMeetingWithParticipantsById(meetingId) {
-  const meeting = await Meeting.findOne({
-    where: { id: meetingId },
-    include: [
-      {
-        model: Participant,
-      },
-    ],
-  });
-  if (!meeting) {
-    throw createMeetingNotFoundError();
-  }
-  return meeting;
-}
-
-async function getMeetingWithParticipantsAndSchedulesById(meetingId) {
-  const meeting = await Meeting.findOne({
-    where: { id: meetingId },
-    include: [
-      {
-        model: Participant,
-        include: [
-          {
-            model: Schedule,
-          },
-        ],
-      },
-    ],
-  });
-  if (!meeting) {
-    throw createMeetingNotFoundError();
-  }
-  return meeting;
 }
 
 async function getParticipantByNameAndMeetingId(name, meetingId) {
@@ -218,7 +176,7 @@ exports.getTopThreeConfirmedTimes = async (req, res, next) => {
     return res.status(400).json({ message: 'Purpose is required' });
   }
   try {
-    const results = await meetingRepositotry.getTopThreeConfirmedTimes(purpose);
+    const results = await meetingRepository.getTopThreeConfirmedTimes(purpose);
     return res.json({
       topThreeConfirmedTimes: results,
     });
@@ -227,31 +185,20 @@ exports.getTopThreeConfirmedTimes = async (req, res, next) => {
   }
 };
 
-function validateMeetingIsNotClosed(meeting) {
-  if (meeting.isClosed === true) {
-    throw createMeetingIsAlreadyClosedError();
-  }
-}
-
 exports.closeMeeting = async (req, res, next) => {
   try {
+    // TODO: query 최적화 필요
     const { meetingId } = req.params;
-    const meeting = await getMeetingWithParticipantsById(meetingId);
+
+    let meeting = await getMeetingById(meetingId);
     await validatePasswordIsMatched(
       req.body.adminPassword,
       meeting.adminPassword,
     );
-    validateMeetingIsNotClosed(meeting);
 
-    meeting.isClosed = true;
-    await meeting.save();
+    await closeMeetingById(meetingId);
 
-    await Promise.all(
-      meeting.Participants.filter((participant) => participant.email).map(
-        (participant) =>
-          sendMeetingVoteEndNotificationEmail(participant.email, meetingId),
-      ),
-    );
+    meeting = await getMeetingWithParticipantsById(meetingId);
     return res.json(MeetingResponse.from(meeting));
   } catch (error) {
     return next(error);
