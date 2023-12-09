@@ -13,7 +13,10 @@ const participantRouter = require('./routes/participant');
 const myScheduleRouter = require('./routes/mySchedule');
 const { sequelize } = require('./models');
 
+const checkMeetings = require('./schedules/checkMeetings');
+
 const app = express();
+checkMeetings();
 
 app.set('port', process.env.PORT || 3000);
 sequelize
