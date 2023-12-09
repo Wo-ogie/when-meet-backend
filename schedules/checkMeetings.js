@@ -16,7 +16,6 @@ module.exports = async () => {
         isClosed: false,
       },
     });
-    console.log('meetings', meetings);
     meetings.forEach((meeting) => {
       scheduleJob(meeting.voteExpiresAt, async () => {
         await closeMeetingById(meeting.id);
