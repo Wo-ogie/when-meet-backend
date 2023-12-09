@@ -4,7 +4,7 @@
   "description": "2023-2 웹 시스템 설계 팀 프로젝트",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app",
+    "start": "node app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "JaeUk",
@@ -29,7 +29,6 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.29.0",
-    "nodemon": "^3.0.1",
     "prettier": "^3.0.3"
   }
 }
