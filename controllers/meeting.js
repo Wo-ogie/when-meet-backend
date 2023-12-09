@@ -57,33 +57,11 @@ async function validatePasswordIsMatched(requestPassword, exPassword) {
   }
 }
 
-function setParticipantDataToCookie(req, res, participant) {
-  const cookieName = 'participantData';
-  const cookieOptions = {
-    httpOnly: true,
-    signed: true,
+function storeParticipantDataToSession(req, res, participant) {
+  req.session.participant = {
+    meetingId: participant.MeetingId,
+    participantId: participant.id,
   };
-
-  const existCookie = req.signedCookies.participantData || null;
-  if (existCookie) {
-    res.clearCookie(
-      cookieName,
-      JSON.stringify({
-        meetingId: existCookie.meetingId,
-        participantId: existCookie.participantId,
-      }),
-      cookieOptions,
-    );
-  }
-
-  res.cookie(
-    cookieName,
-    JSON.stringify({
-      meetingId: participant.MeetingId,
-      participantId: participant.id,
-    }),
-    cookieOptions,
-  );
 }
 
 exports.createMeeting = async (req, res, next) => {
@@ -131,7 +109,7 @@ exports.entry = async (req, res, next) => {
         participant.password,
       );
     }
-    setParticipantDataToCookie(req, res, participant);
+    storeParticipantDataToSession(req, res, participant);
     return res.status(204).end();
   } catch (error) {
     return next(error);

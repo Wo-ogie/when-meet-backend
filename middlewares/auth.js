@@ -1,8 +1,5 @@
-function parseParticipantData(req, res, next) {
-  let participantData = null;
-  if (req.signedCookies.participantData) {
-    participantData = JSON.parse(req.signedCookies.participantData);
-  }
+function getParticipantDataFromSession(req, res, next) {
+  const participantData = req.session.participant;
   if (!participantData) {
     const error = new Error('인증 권한이 없습니다.');
     error.status = 401;
@@ -12,7 +9,7 @@ function parseParticipantData(req, res, next) {
 }
 
 exports.isAuthenticated = (req, res, next) => {
-  const participantData = parseParticipantData(req, res, next);
+  const participantData = getParticipantDataFromSession(req, res, next);
   if (participantData.meetingId !== req.params.meetingId) {
     const error = new Error('접근 권한이 없습니다.');
     error.status = 401;
@@ -23,6 +20,6 @@ exports.isAuthenticated = (req, res, next) => {
 };
 
 exports.getLoggedInParticipantId = (req, res, next) => {
-  const participantData = parseParticipantData(req, res, next);
+  const participantData = getParticipantDataFromSession(req, res, next);
   return participantData?.participantId;
 };
