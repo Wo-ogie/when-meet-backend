@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const { Meeting, Participant, Schedule } = require('../models');
 const meetingRepositotry = require('../repository/meeting');
+const { sendMeetingVoteEndNotificationEmail } = require('../services/mail');
 const {
   createMeetingNotFoundError,
   createMeetingIsAlreadyClosedError,
@@ -30,6 +31,21 @@ async function encryptPassword(password, next) {
 async function getMeetingById(meetingId) {
   const meeting = await Meeting.findOne({
     where: { id: meetingId },
+  });
+  if (!meeting) {
+    throw createMeetingNotFoundError();
+  }
+  return meeting;
+}
+
+async function getMeetingWithParticipantsById(meetingId) {
+  const meeting = await Meeting.findOne({
+    where: { id: meetingId },
+    include: [
+      {
+        model: Participant,
+      },
+    ],
   });
   if (!meeting) {
     throw createMeetingNotFoundError();
@@ -219,7 +235,8 @@ function validateMeetingIsNotClosed(meeting) {
 
 exports.closeMeeting = async (req, res, next) => {
   try {
-    const meeting = await getMeetingById(req.params.meetingId);
+    const { meetingId } = req.params;
+    const meeting = await getMeetingWithParticipantsById(meetingId);
     await validatePasswordIsMatched(
       req.body.adminPassword,
       meeting.adminPassword,
@@ -229,6 +246,12 @@ exports.closeMeeting = async (req, res, next) => {
     meeting.isClosed = true;
     await meeting.save();
 
+    await Promise.all(
+      meeting.Participants.filter((participant) => participant.email).map(
+        (participant) =>
+          sendMeetingVoteEndNotificationEmail(participant.email, meetingId),
+      ),
+    );
     return res.json(MeetingResponse.from(meeting));
   } catch (error) {
     return next(error);
