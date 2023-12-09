@@ -5,6 +5,7 @@ const {
   getMeetingById,
   getMeetingWithParticipantsById,
   getMeetingWithParticipantsAndSchedulesById,
+  getNumOfParticipantsByMeetingId,
   closeMeetingById,
 } = require('../services/meeting');
 const {
@@ -42,14 +43,6 @@ async function getParticipantByNameAndMeetingId(name, meetingId) {
     throw createParticipantNotFoundError();
   }
   return participant;
-}
-
-async function getNumOfParticipantsByMeetingId(meetingId) {
-  return Participant.count({
-    where: {
-      MeetingId: meetingId,
-    },
-  });
 }
 
 async function validatePasswordIsMatched(requestPassword, exPassword) {

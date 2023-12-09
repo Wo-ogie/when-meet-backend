@@ -50,6 +50,13 @@ const getMeetingWithParticipantsAndSchedulesById = async (meetingId) => {
   return meeting;
 };
 
+const getNumOfParticipantsByMeetingId = async (meetingId) =>
+  Participant.count({
+    where: {
+      MeetingId: meetingId,
+    },
+  });
+
 function validateMeetingIsNotClosed(meeting) {
   if (meeting.isClosed === true) {
     throw createMeetingIsAlreadyClosedError();
@@ -75,5 +82,6 @@ module.exports = {
   getMeetingById,
   getMeetingWithParticipantsById,
   getMeetingWithParticipantsAndSchedulesById,
+  getNumOfParticipantsByMeetingId,
   closeMeetingById,
 };

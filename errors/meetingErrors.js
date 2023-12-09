@@ -29,3 +29,11 @@ exports.createMostConfirmedTimeNotFoundError = () => {
   error.status = 404;
   return error;
 };
+
+exports.createMaxParticipantsError = () => {
+  const error = new Error(
+    '설정된 최대 참가자가 모두 참여했습니다. 더 이상 새로 참가하실 수 없습니다.',
+  );
+  error.status = 409;
+  return error;
+};

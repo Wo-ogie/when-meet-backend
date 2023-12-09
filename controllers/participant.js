@@ -1,5 +1,12 @@
 const bcrypt = require('bcrypt');
-const { createPasswordIsNullError } = require('../errors/meetingErrors');
+const {
+  getMeetingById,
+  getNumOfParticipantsByMeetingId,
+} = require('../services/meeting');
+const {
+  createPasswordIsNullError,
+  createMaxParticipantsError,
+} = require('../errors/meetingErrors');
 const {
   createParticipantIsAlreadyExistError,
   createParticipantNotFoundError,
@@ -65,6 +72,13 @@ exports.createParticipant = async (req, res, next) => {
   const reqPassword = req.body.password || null;
   const reqEmail = req.body.email || null;
   try {
+    const meeting = await getMeetingById(meetingId);
+    const currentParticipants =
+      await getNumOfParticipantsByMeetingId(meetingId);
+    if (currentParticipants >= meeting.maxParticipants) {
+      throw createMaxParticipantsError();
+    }
+
     const existingParticipant = await findParticipantByMeetingIdAndName(
       meetingId,
       reqName,
