@@ -1,9 +1,6 @@
 const { sendMeetingVoteEndNotificationEmail } = require('./mail');
 const { Meeting, Participant, Schedule } = require('../models');
-const {
-  createMeetingNotFoundError,
-  createMeetingIsAlreadyClosedError,
-} = require('../errors/meetingErrors');
+const { createMeetingNotFoundError } = require('../errors/meetingErrors');
 
 const getMeetingById = async (meetingId) => {
   const meeting = await Meeting.findOne({
