@@ -1,5 +1,4 @@
 const express = require('express');
-const { isAuthenticated } = require('../middlewares/auth');
 const {
   createMeeting,
   entry,
@@ -18,12 +17,12 @@ router.get('/top-three-confirmed-times', getTopThreeConfirmedTimes);
 
 router.post('/:meetingId/entry', entry);
 
-router.get('/:meetingId', isAuthenticated, getMeetingById);
+router.get('/:meetingId', getMeetingById);
 
-router.get('/:meetingId/details', isAuthenticated, getMeetingDetailById);
+router.get('/:meetingId/details', getMeetingDetailById);
 
-router.patch('/:meetingId/close', isAuthenticated, closeMeeting);
+router.patch('/:meetingId/close', closeMeeting);
 
-router.patch('/:meetingId/confirm-time', isAuthenticated, confirmTime);
+router.patch('/:meetingId/confirm-time', confirmTime);
 
 module.exports = router;
