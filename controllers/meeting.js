@@ -8,11 +8,12 @@ const {
   getMeetingWithParticipantsById,
   getMeetingWithParticipantsAndSchedulesById,
   getNumOfParticipantsByMeetingId,
-  closeMeetingById,
+  setMeetingClosedAndSendVoteEndEmail,
 } = require('../services/meeting');
 const {
   createPasswordNotMatchedError,
   createPasswordIsNullError,
+  createMeetingIsAlreadyClosedError,
 } = require('../errors/meetingErrors');
 const MeetingResponse = require('../dto/response/meetingResponse');
 const MeetingWithParticipantsResponse = require('../dto/response/meetingWithParticipantsResponse');
@@ -84,7 +85,7 @@ exports.createMeeting = async (req, res, next) => {
     });
 
     schedule.scheduleJob(meeting.voteExpiresAt, async () => {
-      await closeMeetingById(meeting.id);
+      await setMeetingClosedAndSendVoteEndEmail(meeting.id);
     });
 
     return res.status(201).json(MeetingResponse.from(meeting));
@@ -163,6 +164,12 @@ exports.getTopThreeConfirmedTimes = async (req, res, next) => {
   }
 };
 
+function validateMeetingIsNotClosed(meeting) {
+  if (meeting.isClosed === true) {
+    throw createMeetingIsAlreadyClosedError();
+  }
+}
+
 exports.closeMeeting = async (req, res, next) => {
   try {
     // TODO: query 최적화 필요
@@ -173,8 +180,9 @@ exports.closeMeeting = async (req, res, next) => {
       req.body.adminPassword,
       meeting.adminPassword,
     );
+    validateMeetingIsNotClosed(meeting);
 
-    await closeMeetingById(meetingId);
+    await setMeetingClosedAndSendVoteEndEmail(meetingId);
 
     meeting = await getMeetingWithParticipantsById(meetingId);
     return res.json(MeetingResponse.from(meeting));

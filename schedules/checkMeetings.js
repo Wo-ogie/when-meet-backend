@@ -1,7 +1,7 @@
 const { scheduleJob } = require('node-schedule');
 const { Op } = require('sequelize');
 const { Meeting } = require('../models');
-const { closeMeetingById } = require('../services/meeting');
+const { setMeetingClosedAndSendVoteEndEmail } = require('../services/meeting');
 
 module.exports = async () => {
   console.log(
@@ -18,7 +18,7 @@ module.exports = async () => {
     });
     meetings.forEach((meeting) => {
       scheduleJob(meeting.voteExpiresAt, async () => {
-        await closeMeetingById(meeting.id);
+        await setMeetingClosedAndSendVoteEndEmail(meeting.id);
       });
     });
   } catch (error) {

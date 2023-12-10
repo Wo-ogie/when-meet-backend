@@ -57,15 +57,12 @@ const getNumOfParticipantsByMeetingId = async (meetingId) =>
     },
   });
 
-function validateMeetingIsNotClosed(meeting) {
-  if (meeting.isClosed === true) {
-    throw createMeetingIsAlreadyClosedError();
-  }
-}
-
-const closeMeetingById = async (meetingId) => {
+const setMeetingClosedAndSendVoteEndEmail = async (meetingId) => {
   const meeting = await getMeetingWithParticipantsById(meetingId);
-  validateMeetingIsNotClosed(meeting);
+
+  if (meeting.isClosed) {
+    return;
+  }
 
   meeting.isClosed = true;
   await meeting.save();
@@ -83,5 +80,5 @@ module.exports = {
   getMeetingWithParticipantsById,
   getMeetingWithParticipantsAndSchedulesById,
   getNumOfParticipantsByMeetingId,
-  closeMeetingById,
+  setMeetingClosedAndSendVoteEndEmail,
 };
