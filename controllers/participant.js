@@ -75,7 +75,10 @@ exports.createParticipant = async (req, res, next) => {
     const meeting = await getMeetingById(meetingId);
     const currentParticipants =
       await getNumOfParticipantsByMeetingId(meetingId);
-    if (currentParticipants >= meeting.maxParticipants) {
+    if (
+      meeting.maxParticipants &&
+      currentParticipants >= meeting.maxParticipants
+    ) {
       throw createMaxParticipantsError();
     }
 
