@@ -84,9 +84,11 @@ exports.createMeeting = async (req, res, next) => {
       confirmedTime: null,
     });
 
-    schedule.scheduleJob(meeting.voteExpiresAt, async () => {
-      await setMeetingClosedAndSendVoteEndEmail(meeting.id);
-    });
+    if (meeting.voteExpiresAt) {
+      schedule.scheduleJob(meeting.voteExpiresAt, async () => {
+        await setMeetingClosedAndSendVoteEndEmail(meeting.id);
+      });
+    }
 
     return res.status(201).json(MeetingResponse.from(meeting));
   } catch (error) {
