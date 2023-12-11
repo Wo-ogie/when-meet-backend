@@ -16,7 +16,7 @@ const { sequelize } = require('./models');
 const checkMeetings = require('./schedules/checkMeetings');
 
 const app = express();
-checkMeetings();
+await checkMeetings();
 
 app.set('port', process.env.PORT || 3000);
 sequelize
